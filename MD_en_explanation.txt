@@ -1,0 +1,1 @@
+Material	Su(MPa)	Sy(MPa)	E(MPa)	stain_f'	stress_f'(MPa)	b	c	

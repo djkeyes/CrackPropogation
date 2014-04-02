@@ -1,0 +1,5 @@
+      INTEGER FUNCTION FORTRANMAX(N,A)
+      INTEGER A(*)
+      M=123
+      FORTRANMAX=M
+      END

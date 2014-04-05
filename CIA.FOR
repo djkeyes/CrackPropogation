@@ -1,6 +1,6 @@
 
 c***************************************************************
-c	Version 3.0
+c	Version 5.3
 C	
 C	SINCE  2010.10.15
 c	Update 2014.03.15
@@ -11,16 +11,18 @@ c     WRITED BY  Youngchul Park
 c	                           ypark@asdl.gatech.edu
 c***************************************************************
 
-	PROGRAM FLA_KC_100
+	PROGRAM CIA
 	INTEGER P
 	PARAMETER (P=10000000)
 	REAL  SF, CF,TDAM, ans, MATno
 	double precision VMAX(P),VMIN(P), SMAX(P), SMIN(P),R(P),SEQ(P)
 	double precision SEQAU(P), NF(P), DAM(P), SDAM(P), CDAM(P), CYC(P)
 	double precision X(P), Y(P), Z(P)
-	INTEGER ELM(P), Stress(P), MatID(P)
+	double precision VMAX0(P), VMIN0(P),Stress(P), NStress(P)
+	 
+	INTEGER ELM(P),  MatID(P) 
 	INTEGER  MatID_sn(P)
-	REAL  NOM, NOP, NOS
+	REAL  NOM, NOP, NOS, MaxS
 	REAL  A(P), B(P), C(P), L(P)
 C	dimension norm_stress(p,5),stress_spectrum(p,5)
       
@@ -50,7 +52,7 @@ C***************************************************************
 	WRITE(*,*)''
 	WRITE(*,*)'       C  I  A  - Crack Initiation Analysis          '
 	WRITE(*,*)''
-	WRITE(*,*)'                    Version 2.0                       '
+	WRITE(*,*)'                    Version 5.3                      '
 	WRITE(*,*)' '
 	WRITE(*,*)'****************************************************'	
 
@@ -94,9 +96,8 @@ c	WRITE(*,*) " "
 	open(UNIT=2,FILE='loadspectrum.dat',STATUS='OLD')
 
 	DO 30, I=1,NOP
-
 	read(2,*) L(I)
-C	WRITE(*,*) L(I) 
+
 30	CONTINUE
 	close(2)
 
@@ -112,28 +113,41 @@ C	WRITE(*,*) L(I)
 
 	DO 20,J=1,NOS
 	read(3,*) ELM(J), Stress(J), MatID(J)
+c      WRITE(*,*) " stress= ", Stress(J)
 20	CONTINUE	
 
 	close(3)
+	
 
-
-c ********** Start to loop ******************
-
-
-	OPEN(UNIT=7,FILE='RESULT.DAT')
+	MaxS=MAXVAL(Stress)
 
 
 
-	DO 500, K=1,NOS
+	WRITE(*,*) " Max stress= ", MaxS
 
-	WRITE(*,*) " Start Analysis for ELEMENT : ", ELM(K)
-	WRITE(*,*) " Calculating stress spectrum  ......."
+
+
+C	open(UNIT=15,FILE='Nstress.txt',STATUS='NEW')
+
+	DO 21,J=1,NOS
+	
+	NStress(J)=Stress(J)/MaxS
+
+      write(*,*) NStress(J)
+
+
+
+21	continue
+
+C	close(15)
+
+
 
 	OPEN(unit=4,file='stress history.txt',STATUS='REPLACE')
 
 	DO 31,I=1,NOP
 
-	WRITE(4,*) L(I)*Stress(K)
+	WRITE(4,*) L(I)*MaxS
 
 31	continue
 
@@ -181,11 +195,34 @@ C	****************************************
 
 	
 	DO 60,I=1,NOM
-	READ(5,*) VMAX(I), VMIN(I), CYC(I) 
+	READ(5,*) VMAX0(I), VMIN0(I), CYC(I) 
 60	CONTINUE
 
-	CLOSE(5, status='delete')
+c	CLOSE(5, status='delete')
 	CLOSE(5)
+
+	
+
+c ********** Start to loop ******************
+
+
+	OPEN(UNIT=7,FILE='RESULT.DAT')
+
+
+
+	DO 500, K=1,NOS
+
+	WRITE(*,*) " Start Analysis for ELEMENT : ", ELM(K)
+	WRITE(*,*) " Calculating stress spectrum  ......."
+
+	DO 61,I=1,NOM
+      VMAX(I)=VMAX0(I)*NStress(K)
+	VMIN(I)=VMIN0(I)*NStress(K)
+
+
+61	continue
+
+C ****************** Deailing Rainflow result *******
 
 
 	DO 70,I=1,NOM

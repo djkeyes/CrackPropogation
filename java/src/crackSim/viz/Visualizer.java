@@ -8,13 +8,16 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import crackSim.core.Grid;
+import crackSim.scheduling.IODevice;
+
 /**
  * This creates the GUI which visually represents the simulation.
  * This is shamelessly copies from the previous project in the hopes that some of the code is portable.
  * 
  * @author Daniel Keyes
  */
-public class Visualizer {
+public class Visualizer implements IODevice {
 
 
 	private JLabel view;
@@ -54,6 +57,11 @@ public class Visualizer {
         frame.pack();
         frame.setLocationByPlatform(true);
         frame.setVisible(true);
+	}
+
+	@Override
+	public void update(Grid g) {
+		// TODO call VisualizationHandler.onUpdate() whenever we get an update
 	}
 
 }

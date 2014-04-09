@@ -6,6 +6,7 @@ import crackSim.viz.Visualizer;
 public interface Scheduler {
 
 	// TODO: should this have a public initialize method? or should run() just initialize everything first?
+	// TODO: when starting a CrackPropagator, also open a new Visualizer
 	public void run();
 
 	// add an io device (like a visualizer).

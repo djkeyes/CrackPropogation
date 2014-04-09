@@ -66,7 +66,6 @@ public class Visualizer implements IODevice {
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, screenWidth, screenHeight);
 
-		g.setColor(Color.BLACK);
 		// draw the grid using a simple orthogonal projection
 		// x -> x
 		// y -> y
@@ -80,13 +79,20 @@ public class Visualizer implements IODevice {
 				xPoints[i] = (int) (vertices.get(i).x * (screenWidth-1) / gridWidth);
 				yPoints[i] = (int) (vertices.get(i).y * (screenHeight-1) / gridHeight);
 			}
+			
+			// fill the polygon with blue (alive) or red (dead)
+			if(currentGrid.getAlive().contains(c)){
+				g.setColor(Color.BLUE);
+			} else {
+				g.setColor(Color.RED);
+			}
+			g.fillPolygon(xPoints, yPoints, n);
 
+			// color the edge of the polygon
+			g.setColor(Color.BLACK);
 			g.drawPolygon(xPoints, yPoints, n);
 		}
 
-//		int xPoints[] = {1, 2, 2, 1};
-//		int yPoints[] = {1, 1, 2, 2};
-//		g.drawPolygon(xPoints, yPoints, xPoints.length);
 		view.repaint(); // repaint the simulation with updated elements
 	}
 

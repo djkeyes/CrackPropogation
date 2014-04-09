@@ -1,5 +1,8 @@
 package crackSim.scheduling;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import crackSim.core.BackingGrid;
 
 /**
@@ -10,21 +13,29 @@ import crackSim.core.BackingGrid;
  */
 public class MockScheduler implements Scheduler {
 
+	private BackingGrid backingGrid;
+	private List<IODevice> ioDevices;
+
 	// TODO: feed this BackingGrid into the crack initializer and CrackPropagator
 	public MockScheduler(BackingGrid bg) {
-		// TODO Auto-generated constructor stub
+		backingGrid = bg;
+		ioDevices = new LinkedList<IODevice>();
 	}
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+
+		// for now, just start up the visualizer in Runner and send it a couple dummy updates.
+		for (IODevice ioDevice : ioDevices) {
+			// TODO
+			ioDevice.update(null);
+		}
 	}
 
 	@Override
 	public void addIODevice(IODevice ioDevice) {
-		// TODO Auto-generated method stub
-		
+		ioDevices.add(ioDevice);
 	}
 
 }

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -88,10 +89,12 @@ public class Visualizer implements IODevice {
 			}
 
 			// fill the polygon with blue (alive) or red (dead)
-			if (currentGrid.getAlive().contains(c)) {
-				g.setColor(Color.BLUE);
-			} else {
+			if(currentGrid.getDamaged().contains(c)){
 				g.setColor(Color.RED);
+			} else if (!Collections.disjoint(currentGrid.getAdjacent(c), currentGrid.getDamaged())) {
+				g.setColor(Color.YELLOW);
+			} else if (currentGrid.getAlive().contains(c)) {
+				g.setColor(Color.BLUE);
 			}
 			g.fillPolygon(xPoints, yPoints, n);
 
@@ -102,5 +105,4 @@ public class Visualizer implements IODevice {
 
 		view.repaint(); // repaint the simulation with updated elements
 	}
-
 }

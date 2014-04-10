@@ -3,6 +3,7 @@ package crackSim.viz;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -70,18 +71,24 @@ public class Visualizer implements IODevice {
 		// x -> x
 		// y -> y
 		// z -> 0
-		for (Cell c : backingGrid.getCells()) {
+		// This could have weird occlusion effects depending on the grid. Since the cells are in 3-space, they could possible
+		// wrap around and cover each other up in awkward ways. The smart way to solve this is to use something like the Painter's
+		// Algorithm. This is just a rough visualization though, so it might be simplest to just sort the polygons by the z-position of
+		// their closest vertex, or something.
+		// TODO: add a naive sort
+		Collection<? extends Cell> unsortedCells = backingGrid.getCells();
+		for (Cell c : unsortedCells) {
 			List<GridPoint> vertices = c.getVertices();
 			int n = vertices.size();
 			int[] xPoints = new int[n];
 			int[] yPoints = new int[n];
 			for (int i = 0; i < n; i++) {
-				xPoints[i] = (int) (vertices.get(i).x * (screenWidth-1) / gridWidth);
-				yPoints[i] = (int) (vertices.get(i).y * (screenHeight-1) / gridHeight);
+				xPoints[i] = (int) (vertices.get(i).x * (screenWidth - 1) / gridWidth);
+				yPoints[i] = (int) (vertices.get(i).y * (screenHeight - 1) / gridHeight);
 			}
-			
+
 			// fill the polygon with blue (alive) or red (dead)
-			if(currentGrid.getAlive().contains(c)){
+			if (currentGrid.getAlive().contains(c)) {
 				g.setColor(Color.BLUE);
 			} else {
 				g.setColor(Color.RED);

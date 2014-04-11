@@ -36,9 +36,18 @@ public class FemBackingGrid implements BackingGrid {
 		BufferedReader bf = new BufferedReader(new FileReader(filename));
 		CommandFactory p = new CommandFactory();
 		List<ParseCommand> commands = new LinkedList<ParseCommand>();
-		String curLine;
-		while ((curLine = bf.readLine()) != null) {
-			commands.add(p.parse(curLine));
+		String curLine = bf.readLine();
+		String nextLine;
+		while ((nextLine = bf.readLine()) != null) {
+			// if the next line starts with a space, use it too
+			// TODO: this might not be a hard-and-fast rule. I'm not 100% sure of BDF syntax.
+			if (nextLine.indexOf(' ') == 0 || nextLine.indexOf('\t') == 0) {
+				curLine += nextLine;
+			} else {
+				commands.add(p.parse(curLine));
+				curLine = nextLine;
+			}
+			// TODO: this might have weird behavior if the file does not end in a newline or has a command on the last line. I think?
 		}
 		for (ParseCommand command : commands) {
 			command.execute();
@@ -58,6 +67,12 @@ public class FemBackingGrid implements BackingGrid {
 	@Override
 	public Collection<? extends Cell> getCells() {
 		return cells.values();
+	}
+
+	@Override
+	public Set<? extends GridPoint> getGridPoints() {
+		// TODO: don't create a new hash set on every call to this method. just save the old one.
+		return new HashSet<GridPoint>(gridpoints.values());
 	}
 
 	public Map<Cell, List<FemCell>> generateAdjacencyList() {
@@ -103,8 +118,20 @@ public class FemBackingGrid implements BackingGrid {
 		private ParseCommand createCommand(final String commandString, final String line) {
 			ParseCommand curCommand = null;
 			// If we were using java 8, I could switch on strings and store commands as Functional Interfaces. but whatever.
-			if (commandString.equalsIgnoreCase("CBAR") || commandString.equalsIgnoreCase("PSHELL") || commandString.equals("RBE3")) {
-				// These commands aren't relevant for the CA grid. Do nothing.
+
+			// The BDF file i'm using has a lot of irrelevant commands. I assume they're not important for this simulation, but if
+			// they are, they should be removed from this list and have their behavior specified.
+			List<String> ignoredCommands = Arrays.asList("", "CBAR", "PSHELL", "RBE3", "SOL", "CEND", "ECHO", "SUBCASE", "BEGIN", "PARAM",
+					"PBARL", "MAT1*", "*", "SPCADD", "LOAD", "SPC1", "FORCE", "MOMENT", "ENDDATA");
+			boolean isIgnoredCommand = false;
+			for (String s : ignoredCommands) {
+				if (s.equalsIgnoreCase(commandString)) {
+					isIgnoredCommand = true;
+					break;
+				}
+			}
+			if (isIgnoredCommand) {
+				// These commands aren't relevant for the mesh. Do nothing.
 				curCommand = new ParseCommand() {
 					@Override
 					public void execute() {
@@ -175,6 +202,8 @@ public class FemBackingGrid implements BackingGrid {
 					}
 				};
 			} else {
+				System.out.println("line: " + "'" + line + "'");
+				System.out.println("cmdstring: " + "'" + commandString + "'");
 				throw new RuntimeException("command not found: " + commandString + ". meep.");
 			}
 			return curCommand;
@@ -209,18 +238,19 @@ public class FemBackingGrid implements BackingGrid {
 		 * Associates this cell with its gridpoints, and vice-versa. This must be called before attempting to access adjacency info,
 		 * because adjacency us calculated based off of shared gridpoints.
 		 * 
-		 * @param gridpoints a collection of all FemGridPoints in the current simulation, so that raw index information can be looked up. 
+		 * @param gridpoints
+		 *            a collection of all FemGridPoints in the current simulation, so that raw index information can be looked up.
 		 */
 		public abstract void storeGridpoints(Map<Integer, FemGridPoint> gridpoints);
-		
+
 		/**
 		 * Returns a list a cells that share gridpoints with this cell, excluding this cell.
 		 */
-		public List<FemCell> getAdjacent(){
+		public List<FemCell> getAdjacent() {
 			Set<FemCell> adjacent = new HashSet<FemCell>();
-			for(GridPoint g : getVertices()){
+			for (GridPoint g : getVertices()) {
 				FemGridPoint f = (FemGridPoint) g;
-				for(FemCell fc : f.incidentCells){
+				for (FemCell fc : f.incidentCells) {
 					adjacent.add(fc);
 				}
 			}

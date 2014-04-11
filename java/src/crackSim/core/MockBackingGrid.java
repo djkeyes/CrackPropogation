@@ -1,8 +1,10 @@
 package crackSim.core;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 // implements a backing grid by just using a fixed-size array of cells
 public class MockBackingGrid implements BackingGrid {
@@ -11,6 +13,7 @@ public class MockBackingGrid implements BackingGrid {
 	// This is in row-major; cells[i][j] is row i, col j.
 	private Cell[][] cells;
 	private List<Cell> cellsList;
+	private Set<GridPoint> gridPoints;
 
 	/**
 	 * Creates a simple CA backing grid
@@ -28,6 +31,10 @@ public class MockBackingGrid implements BackingGrid {
 				cells[i][j] = new MockCell(i, j);
 				cellsList.add(cells[i][j]);
 			}
+		}
+		gridPoints = new HashSet<GridPoint>();
+		for(Cell c : cellsList){
+			gridPoints.addAll(c.getVertices());
 		}
 	}
 
@@ -60,6 +67,10 @@ public class MockBackingGrid implements BackingGrid {
 	@Override
 	public Collection<? extends Cell> getCells() {
 		return cellsList;
+	}
+	@Override
+	public Set<? extends GridPoint> getGridPoints(){
+		return gridPoints;
 	}
 
 	/**

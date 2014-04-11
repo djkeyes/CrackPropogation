@@ -1,8 +1,11 @@
 package runner;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import crackSim.core.BackingGrid;
 import crackSim.core.CAUpdateCalculator;
-import crackSim.core.MockBackingGrid;
+import crackSim.core.FemBackingGrid;
 import crackSim.core.MockUpdateCalculator;
 import crackSim.scheduling.MockScheduler;
 import crackSim.scheduling.Scheduler;
@@ -14,8 +17,17 @@ public class Runner {
 
 	// TODO: add different parameters to specify which runtime classes we're using
 	public Runner() {
-		BackingGrid bg = new MockBackingGrid(20, 30);
-		// BackingGrid bg = new FemBackingGrid("YCRM.bdf");
+		// BackingGrid bg = new MockBackingGrid(20, 30);
+		BackingGrid bg = null;
+		try {
+			bg = new FemBackingGrid("YCRM.bdf");
+		} catch (FileNotFoundException e) {
+			System.err.println("Could not find BDF file!");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.err.println("Error reading from BDF file!");
+			e.printStackTrace();
+		}
 
 		CAUpdateCalculator uc = new MockUpdateCalculator();
 

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import crackSim.core.BackingGrid.Cell;
+import crackSim.core.BackingGrid.GridPoint;
 
 /**
  * Grid class to store adjacent FEM elements, akin to a cellular automaton. Each propogator keeps a grid updated at its own timespeed,
@@ -47,5 +48,9 @@ public class Grid {
 	 */
 	public List<? extends Cell> getAdjacent(Cell c) {
 		return backingGrid.getNeighbors(c);
+	}
+	
+	public Set<? extends GridPoint> getGridPoints(){
+		return backingGrid.getGridPoints();
 	}
 }

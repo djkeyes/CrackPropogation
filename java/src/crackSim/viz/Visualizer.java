@@ -3,8 +3,10 @@ package crackSim.viz;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -61,8 +63,30 @@ public class Visualizer implements IODevice {
 
 		int screenWidth = surface.getWidth();
 		int screenHeight = surface.getHeight();
-		int gridWidth = 30; // TODO where should these numbers come from?
-		int gridHeight = 20;
+		// if we're just doing an orthogonal projection, we only need to know the maximum and minimum x and y positions
+		int gridMinX = 0, gridMaxX = 0, gridMinY = 0, gridMaxY = 0;
+		int buffer = 15; // magic valid to add some buffer to the edge of the vis
+		boolean first = true;
+		for (GridPoint gp : currentGrid.getGridPoints()) {
+			if (first) {
+				gridMinX = (int) Math.floor(gp.x);
+				gridMaxX = (int) Math.ceil(gp.x);
+				gridMinY = (int) Math.floor(gp.y);
+				gridMaxY = (int) Math.ceil(gp.y);
+				first = false;
+				continue;
+			}
+			gridMinX = Math.min(gridMinX, (int) Math.floor(gp.x));
+			gridMaxX = Math.max(gridMaxX, (int) Math.ceil(gp.x));
+			gridMinY = Math.min(gridMinY, (int) Math.floor(gp.y));
+			gridMaxY = Math.max(gridMaxY, (int) Math.ceil(gp.y));
+		}
+		gridMinX -= buffer;
+		gridMaxX += buffer;
+		gridMinY -= buffer;
+		gridMaxY += buffer;
+		int gridWidth = gridMaxX - gridMinX;
+		int gridHeight = gridMaxY - gridMinY;
 
 		// clear
 		g.setColor(Color.WHITE);
@@ -76,20 +100,34 @@ public class Visualizer implements IODevice {
 		// wrap around and cover each other up in awkward ways. The smart way to solve this is to use something like the Painter's
 		// Algorithm. This is just a rough visualization though, so it might be simplest to just sort the polygons by the z-position of
 		// their closest vertex, or something.
-		// TODO: add a naive sort
-		Collection<? extends Cell> unsortedCells = backingGrid.getCells();
-		for (Cell c : unsortedCells) {
+		List<Cell> sortedCells = new ArrayList<Cell>(backingGrid.getCells());
+		Collections.sort(sortedCells, new Comparator<Cell>() {
+			@Override
+			public int compare(Cell c1, Cell c2) {
+				// find the vertex with the largest Z-value, and sort by that
+				double c1z = c1.getVertices().get(0).z;
+				double c2z = c2.getVertices().get(0).z;
+				for (GridPoint g : c1.getVertices()) {
+					c1z = Math.max(c1z, g.z);
+				}
+				for (GridPoint g : c2.getVertices()) {
+					c2z = Math.max(c2z, g.z);
+				}
+				return (int) Math.signum(c1z - c2z);
+			}
+		});
+		for (Cell c : sortedCells) {
 			List<GridPoint> vertices = c.getVertices();
 			int n = vertices.size();
 			int[] xPoints = new int[n];
 			int[] yPoints = new int[n];
 			for (int i = 0; i < n; i++) {
-				xPoints[i] = (int) (vertices.get(i).x * (screenWidth - 1) / gridWidth);
-				yPoints[i] = (int) (vertices.get(i).y * (screenHeight - 1) / gridHeight);
+				xPoints[i] = (int) ((vertices.get(i).x - gridMinX) * (screenWidth - 1) / gridWidth);
+				yPoints[i] = (int) ((vertices.get(i).y - gridMinY) * (screenHeight - 1) / gridHeight);
 			}
 
 			// fill the polygon with blue (alive) or red (dead)
-			if(currentGrid.getDamaged().contains(c)){
+			if (currentGrid.getDamaged().contains(c)) {
 				g.setColor(Color.RED);
 			} else if (!Collections.disjoint(currentGrid.getAdjacent(c), currentGrid.getDamaged())) {
 				g.setColor(Color.YELLOW);

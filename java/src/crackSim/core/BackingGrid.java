@@ -2,6 +2,7 @@ package crackSim.core;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 // a read-only grid to represent the current CA model. multiple write-able Grid objects can have a reference to a single BackingGrid
 public interface BackingGrid {
@@ -22,9 +23,10 @@ public interface BackingGrid {
 	 * @return Cells that are considered immediately adjacent to c. This does not include c.
 	 */
 	public List<? extends Cell> getNeighbors(Cell c);
-	
+
 	/**
 	 * Returns a full list of all cells in this grid.
+	 * 
 	 * @return a collection of Cell objects or subclasses thereof.
 	 */
 	public Collection<? extends Cell> getCells();
@@ -46,11 +48,20 @@ public interface BackingGrid {
 	 * Simple container class representing a point in 3space. This is intended to be helpful for storing state in the CA model.
 	 */
 	public class GridPoint {
-		public GridPoint(double x, double y, double z){
+		public GridPoint(double x, double y, double z) {
 			this.x = x;
 			this.y = y;
 			this.z = z;
 		}
+
 		public final double x, y, z;
 	}
+
+	/**
+	 * Cells in a BackingGrid share a set of gridpoints with one another. For convenience, this returns that set of gridpoints, without
+	 * repeats.
+	 * 
+	 * @return a set of unique 3d points
+	 */
+	public Set<? extends GridPoint> getGridPoints();
 }

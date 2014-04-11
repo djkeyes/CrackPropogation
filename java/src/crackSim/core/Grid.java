@@ -30,9 +30,31 @@ public class Grid {
 	// TODO: I'm not sure how users will obtain a reference to a Cell object. do they get it from the BackingGrid? or from the
 	// CAUpdator? or should this take an FEM index instead of a cell? Or should callers construct new cells on the fly (in which case
 	// we should override cell.hashCode())
+	/**
+	 * Adds a single damaged cell to the grid.
+	 * 
+	 * @param A
+	 *            cell
+	 */
 	public void addDamaged(Cell c) {
 		damaged.add(c);
 		alive.remove(c);
+	}
+
+	/**
+	 * Adds all damaged cells in the passed grid to this grid. If a cell is damaged in either grid or in both grids, it will be marked
+	 * as damaged in this grid as a result. Both grids be based off the same backing grid (and contain the same type of backing cells).
+	 * 
+	 * @param grid
+	 *            A grid containing any amount of damaged cells to merge into this grid.
+	 */
+	public void addDamaged(Grid grid) {
+		assert(this.backingGrid == grid.backingGrid);
+		
+		for(Cell c : grid.damaged){
+			this.alive.remove(c);
+			this.damaged.add(c);
+		}
 	}
 
 	public Set<Cell> getAlive() {
@@ -49,8 +71,12 @@ public class Grid {
 	public List<? extends Cell> getAdjacent(Cell c) {
 		return backingGrid.getNeighbors(c);
 	}
-	
-	public Set<? extends GridPoint> getGridPoints(){
+
+	public Set<? extends GridPoint> getGridPoints() {
 		return backingGrid.getGridPoints();
+	}
+
+	public BackingGrid getBackingGrid() {
+		return backingGrid;
 	}
 }

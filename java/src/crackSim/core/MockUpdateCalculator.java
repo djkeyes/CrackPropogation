@@ -13,18 +13,22 @@ public class MockUpdateCalculator implements CAUpdateCalculator {
 
 	private int initialCount = 0;
 	private Random rng = new Random(12345);
+	private BackingGrid backingGrid;
+
+	public MockUpdateCalculator(BackingGrid bg) {
+		this.backingGrid = bg;
+	}
 
 	@Override
 	public Cell getInitialCrackPosition(Grid currentState) {
 		// randomly return a new crack every 5 ticks
-		initialCount++;
-		if (initialCount != 5) {
+		if (++initialCount != 5) {
 			return null;
 		}
 
 		initialCount = 0;
-		int size = currentState.getAlive().size();
-		Cell randomResult = (Cell) currentState.getAlive().toArray()[rng.nextInt(size)];
+		int size = backingGrid.getCells().size();
+		Cell randomResult = (Cell) backingGrid.getCells().toArray()[rng.nextInt(size)];
 		return randomResult;
 	}
 

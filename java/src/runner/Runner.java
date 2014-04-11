@@ -29,7 +29,7 @@ public class Runner {
 			e.printStackTrace();
 		}
 
-		CAUpdateCalculator uc = new MockUpdateCalculator();
+		CAUpdateCalculator uc = new MockUpdateCalculator(bg);
 
 		programSched = new MockScheduler(bg, uc);
 

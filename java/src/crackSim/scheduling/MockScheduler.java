@@ -54,7 +54,7 @@ public class MockScheduler implements Scheduler {
 		}
 
 		// this just runs on a clock, but it could be put inside a while-loop instead to run as-fast-as-possible
-		int delay = 500; // in milliseconds
+		int delay = 1; // in milliseconds
 		Timer t = new Timer(delay, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -92,6 +92,7 @@ public class MockScheduler implements Scheduler {
 				for (IODevice ioDevice : ioDevices) {
 					ioDevice.update(g);
 				}
+				
 			}
 		});
 		t.start();

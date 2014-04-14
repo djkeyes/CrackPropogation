@@ -1,7 +1,13 @@
 package runner;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import javax.swing.JFrame;
+import javax.swing.Timer;
 
 import crackSim.core.BackingGrid;
 import crackSim.core.CAUpdateCalculator;
@@ -33,9 +39,23 @@ public class Runner {
 
 		programSched = new MockScheduler(bg, uc);
 
-		Visualizer viz = new Visualizer(bg);
-		viz.show();
-		programSched.addIODevice(viz);
+		// do some JFrame boilerplate
+		JFrame frame = new JFrame("Crack propagation simulator"); // title
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		Visualizer top = new Visualizer(bg, Visualizer.Camera.TOP);
+		Visualizer down = new Visualizer(bg, Visualizer.Camera.BOTTOM);
+
+		frame.setLayout(new GridLayout(1, 2));
+		frame.add(top);
+		frame.add(down);
+		frame.setSize(800, 600);
+		top.setSize(400, 600);
+		down.setSize(400, 600);
+		frame.setLocationByPlatform(true);
+		frame.setVisible(true);
+		programSched.addIODevice(top);
+		programSched.addIODevice(down);
 	}
 
 	public void run() {

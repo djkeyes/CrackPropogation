@@ -25,7 +25,8 @@ public class Runner {
 		// BackingGrid bg = new MockBackingGrid(20, 30);
 		BackingGrid bg = null;
 		try {
-			bg = new FemBackingGrid("YCRM.bdf");
+//			bg = new FemBackingGrid("YCRM.bdf");
+			bg = new FemBackingGrid("YCRM_v10_ST_14_0313.bdf");
 		} catch (FileNotFoundException e) {
 			System.err.println("Could not find BDF file!");
 			e.printStackTrace();

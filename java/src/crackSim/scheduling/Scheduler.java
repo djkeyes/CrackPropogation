@@ -1,6 +1,6 @@
 package crackSim.scheduling;
 
-import crackSim.viz.Visualizer;
+import crackSim.viz.VisualizerPanel;
 
 // TODO: feel free to make this an abstract class, ie if you want to put a List<CrackPropagator> variable in here.
 public interface Scheduler {

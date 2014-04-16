@@ -9,3 +9,6 @@
 *.project
 *.classpath
 bin/
+
+# Data Files #
+*.bdf

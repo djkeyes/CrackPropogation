@@ -29,7 +29,7 @@ public class CrackPropagator {
 		if (damaged != null)
 			currentGrid.addDamaged(damaged.c);
 
-		return (currentTimestep += damaged.t);
+		return currentTimestep = damaged.t;
 	}
 
 	/**

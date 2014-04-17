@@ -58,9 +58,10 @@ public class MockUpdateCalculator implements CAUpdateCalculator {
 		// for the time, things are a little tricky. Each crack propagator expands independently, so we keep track of how far in time
 		// each propagator is. In our case, we schedule the next crack for 5 timeticks afterwards.
 		if(!simTimePropagators.containsKey(currentCrack)){
-			simTimePropagators.put(currentCrack, 0);
+			simTimePropagators.put(currentCrack, currentCrack.getCurrentTimestep());
 		}
 		int crackTime = simTimePropagators.get(currentCrack);
+		System.out.println("previous crack was at " + crackTime + " so the next crack is calculated for " + (crackTime+5));
 		crackTime += 5;
 		simTimePropagators.put(currentCrack, crackTime);
 

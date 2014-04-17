@@ -14,10 +14,9 @@ public class CrackInitializer {
 	}
 
 	public CrackPropagator createNextCrack(Grid currentGrid) {
-		Cell4D initialCrack = updater.getInitialCrackPosition(currentGrid);
+		Cell4D initialCrack = updater.nextInitialCrackPosition(currentGrid);
 		// create a new backing grid for the local crack environment
 		BackingGrid localBackingGrid = defaultLocalBackingGrid;
-		System.out.println("creating a new crack propagator at " + initialCrack);
 		return new CrackPropagator(initialCrack.c, initialCrack.t, localBackingGrid, updater);
 	}
 

@@ -2,21 +2,17 @@ package crackSim.scheduling;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.Timer;
 
 import crackSim.core.BackingGrid;
 import crackSim.core.CAUpdateCalculator;
+import crackSim.core.Cell4D;
 import crackSim.core.CrackInitializer;
 import crackSim.core.CrackPropagator;
-import crackSim.core.FemBackingGrid;
 import crackSim.core.Grid;
 
 /**
@@ -34,6 +30,7 @@ public class MockScheduler implements Scheduler {
 	private List<CrackPropagator> propagators;
 
 	private int globalTime;
+	private CrackPropagator nextInitialCrack = null;
 
 	public MockScheduler(BackingGrid macroBackingGrid, BackingGrid microBackingGrid, CAUpdateCalculator uc) {
 		ioDevices = new LinkedList<IODevice>();
@@ -66,43 +63,46 @@ public class MockScheduler implements Scheduler {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				System.out.println("update--time=" + globalTime);
+//				System.out.println("propagators list:");
+//				for (CrackPropagator p : propagators) {
+//					System.out.println(p + ": t=" + p.getCurrentTimestep() + ", n=" + p.getNextTimestep());
+//				}
+				
 				// for now, just start up the visualizer in Runner and send it a couple dummy updates.
 				// Cell newInitialCrack = updateCalculator.getInitialCrackPosition(g);
 				// note: the initializer does not run in simulation time--it runs *faster than* simulation time. If we call
 				// createNextCrack() at timesteps 1, 2, and 3, it might return a crack that starts at timesteps 100, 500, and 10000.
 				// This doesn't make our simulation less accurate, it just means we'll be store a lot of cracks that might never be
 				// relevant. TODO: fix that.
-				CrackPropagator newCrack = initializer.createNextCrack(g);
-				// TODO: is this ever null?
-				if (newCrack != null) {
-					propagators.add(newCrack);
-					g.addDamaged(newCrack.getInitialCrackLocation());
+				if (nextInitialCrack == null) {
+					nextInitialCrack = initializer.createNextCrack(g);
+				}
+				if (nextInitialCrack != null && nextInitialCrack.getCurrentTimestep() <= globalTime) {
+					propagators.add(nextInitialCrack);
+					g.addDamaged(nextInitialCrack.getInitialCrackLocation());
+					nextInitialCrack = null;
 				}
 
 				for (CrackPropagator prop : propagators) {
-					if (globalTime == prop.getCurrentTimestep()) {
-						System.out.println("updating crack " + prop + ".");
+					if (globalTime == prop.getNextTimestep()) {
 						prop.update();
-						System.out.println("next update will be at " + prop.getCurrentTimestep());
 					}
 				}
 				for (int i = 0; i < propagators.size(); i++) {
-					// TODO: propogators don't conflict and merge. their behavior is different.
-					// protip: we're going through j in backwards order to make removal easier
-					// for(j=N-1; j > 0; j--)
-					// ....if(condition)
-					// .........list.remove(j)
-					// this won't accidentally skip elements or have weird out-of-bounds exceptions, which you'd need to check for if
-					// you went in forwards order.
-					// for (int j = propagators.size() - 1; j > i; j--) {
-					// CrackPropagator first = propagators.get(i);
-					// CrackPropagator second = propagators.get(j);
-					// // if there's a conflict, merge the processes
-					// if (first.conflictsWith(second)) {
-					// first.merge(second);
-					// propagators.remove(j);
-					// }
-					// }
+					for (int j = propagators.size() - 1; j > i; j--) {
+						CrackPropagator first = propagators.get(i);
+						CrackPropagator second = propagators.get(j);
+						// if there's a conflict, merge the processes
+						// Since we're running these as a single process for the MockScheduler, the times are already sorted by next
+						// update, so no need to perform a time check or rollbacks
+						if (first.conflictsWith(second)) {
+							// this method affects both of them mutually, so
+							// first.affectAdjacent(second)
+							// is the same as
+							// second.affectAdjacent(first)
+							first.affectAdjacent(second);
+						}
+					}
 				}
 				for (IODevice ioDevice : ioDevices) {
 					ioDevice.update(g, propagators);

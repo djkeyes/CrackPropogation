@@ -28,7 +28,7 @@ public class MockUpdateCalculator implements CAUpdateCalculator {
 	}
 
 	@Override
-	public Cell4D getInitialCrackPosition(Grid currentState) {
+	public Cell4D nextInitialCrackPosition(Grid currentState) {
 		// randomly return a new crack every 5 ticks
 		simTimeInitializer += 5;
 		int size = macroBackingGrid.getCells().size();
@@ -58,10 +58,9 @@ public class MockUpdateCalculator implements CAUpdateCalculator {
 		// for the time, things are a little tricky. Each crack propagator expands independently, so we keep track of how far in time
 		// each propagator is. In our case, we schedule the next crack for 5 timeticks afterwards.
 		if(!simTimePropagators.containsKey(currentCrack)){
-			simTimePropagators.put(currentCrack, currentCrack.getCurrentTimestep());
+			simTimePropagators.put(currentCrack, currentCrack.getNextTimestep());
 		}
 		int crackTime = simTimePropagators.get(currentCrack);
-		System.out.println("previous crack was at " + crackTime + " so the next crack is calculated for " + (crackTime+5));
 		crackTime += 5;
 		simTimePropagators.put(currentCrack, crackTime);
 
@@ -70,6 +69,12 @@ public class MockUpdateCalculator implements CAUpdateCalculator {
 		}else{
 			return null;
 		}
+	}
+
+	@Override
+	public int getNextCrackUpdateTime() {
+		// cracks always happen 5 ticks after one another.
+		return 5;
 	}
 
 }

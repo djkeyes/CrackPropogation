@@ -71,7 +71,7 @@ public class UpdateCalculatorFromFile implements CAUpdateCalculator {
 	}
 
 	@Override
-	public Cell4D getInitialCrackPosition(Grid currentState) {
+	public Cell4D nextInitialCrackPosition(Grid currentState) {
 		return initialCracks.remove();
 	}
 
@@ -81,6 +81,12 @@ public class UpdateCalculatorFromFile implements CAUpdateCalculator {
 		
 		
 		return null;
+	}
+
+	@Override
+	public int getNextCrackUpdateTime() {
+		// TODO Auto-generated method stub
+		return -1;
 	}
 
 }

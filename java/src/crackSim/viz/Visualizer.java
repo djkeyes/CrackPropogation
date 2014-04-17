@@ -46,7 +46,7 @@ public class Visualizer implements IODevice {
 			microPanel.add(mv);
 		
 		// sizes
-		frame.setPreferredSize(new Dimension(800, 600));
+		frame.setPreferredSize(new Dimension(820, 645));
 		macroPanel.setPreferredSize(new Dimension(800, 400));
 		topView.setPreferredSize(new Dimension(400, 400));
 		bottomView.setPreferredSize(new Dimension(400, 400));

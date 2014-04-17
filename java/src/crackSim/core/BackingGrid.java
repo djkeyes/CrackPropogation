@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import crackSim.core.BackingGrid.Cell;
+
 // a read-only grid to represent the current CA model. multiple write-able Grid objects can have a reference to a single BackingGrid
 public interface BackingGrid {
 
@@ -64,4 +66,5 @@ public interface BackingGrid {
 	 * @return a set of unique 3d points
 	 */
 	public Set<? extends GridPoint> getGridPoints();
+
 }

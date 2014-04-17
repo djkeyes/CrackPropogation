@@ -54,7 +54,7 @@ public class MockScheduler implements Scheduler {
 
 		// initial update
 		for (IODevice ioDevice : ioDevices) {
-			ioDevice.update(g, propagators);
+			ioDevice.update(g, 0, propagators);
 		}
 
 		// this just runs on a clock, but it could be put inside a while-loop instead to run as-fast-as-possible
@@ -105,7 +105,7 @@ public class MockScheduler implements Scheduler {
 					}
 				}
 				for (IODevice ioDevice : ioDevices) {
-					ioDevice.update(g, propagators);
+					ioDevice.update(g, globalTime, propagators);
 				}
 
 				globalTime++;

@@ -11,5 +11,5 @@ public interface IODevice {
 
 	// TODO: what arguments should this take? A Grid that reflects the current state? a timestep? a list of CrackPropagators?
 	// should we make a whole new class called SimulationState that just stores all of these values?
-	public void update(Grid g, List<CrackPropagator> propagators);
+	public void update(Grid g, int macroTime, List<CrackPropagator> propagators);
 }

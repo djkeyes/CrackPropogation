@@ -68,12 +68,13 @@ public class Visualizer implements IODevice {
 	}
 
 	@Override
-	public void update(Grid g, List<CrackPropagator> ps) {
-		topView.update(g);
-		bottomView.update(g);
+	public void update(Grid g, int macroTime, List<CrackPropagator> ps) {
+		topView.update(g, macroTime);
+		bottomView.update(g, macroTime);
 		
 		for(int i=0; i < Math.min(4, ps.size()); i++){
-			microViews[i].update(ps.get(i).getGrid());
+			CrackPropagator p = ps.get(i);
+			microViews[i].update(p.getGrid(), p.getCurrentTimestep());
 		}
 	}
 

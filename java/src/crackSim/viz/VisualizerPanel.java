@@ -126,9 +126,10 @@ public class VisualizerPanel extends JPanel {
 		};
 		
 		this.backingGrid = macroBackingGrid;
+		this.currentTime = 0;
 	}
 
-	public void update(Grid currentGrid) {
+	public void update(Grid currentGrid, int currentTime) {
 
 		int screenWidth = getWidth();
 		int screenHeight = getHeight();
@@ -175,9 +176,11 @@ public class VisualizerPanel extends JPanel {
 		this.screenHeight = screenHeight;
 		this.gridWidth = gridWidth;
 		this.gridHeight = gridHeight;
+		this.currentTime = currentTime;
 		repaint();
 	}
 
+	private int currentTime;
 	private List<Cell> sortedCells;
 	private Grid currentGrid;
 	private double gridMinX;
@@ -230,6 +233,12 @@ public class VisualizerPanel extends JPanel {
 				g.setColor(Color.BLACK);
 				g.drawPolygon(xPoints, yPoints, n);
 			}
+			
+			String timeString = "t=" + currentTime;
+			g.setColor(Color.WHITE);
+			g.fillRect(0, 0, g.getFontMetrics().stringWidth(timeString), g.getFontMetrics().getHeight());
+			g.setColor(Color.BLACK);
+			g.drawString(timeString, 0, 12);
 		}
 	}
 }

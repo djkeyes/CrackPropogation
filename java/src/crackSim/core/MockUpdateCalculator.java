@@ -36,6 +36,8 @@ public class MockUpdateCalculator implements CAUpdateCalculator {
 		return new Cell4D(randomResult, simTimeInitializer);
 	}
 
+	// the Cell4D.t time returned by this method is relative to the current timestep.
+	// if the current time is 123 and the Cell4D object has time 5, the crack should propagate at time 128.
 	@Override
 	public Cell4D getCrackUpdate(Grid currentState, CrackPropagator currentCrack) {
 		// this uses the micro-level grid, not the macro level one

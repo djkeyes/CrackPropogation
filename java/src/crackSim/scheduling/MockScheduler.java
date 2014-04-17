@@ -65,7 +65,7 @@ public class MockScheduler implements Scheduler {
 		Timer t = new Timer(delay, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("update");
+				System.out.println("update--time=" + globalTime);
 				// for now, just start up the visualizer in Runner and send it a couple dummy updates.
 				// Cell newInitialCrack = updateCalculator.getInitialCrackPosition(g);
 				// note: the initializer does not run in simulation time--it runs *faster than* simulation time. If we call
@@ -81,11 +81,9 @@ public class MockScheduler implements Scheduler {
 
 				for (CrackPropagator prop : propagators) {
 					if (globalTime == prop.getCurrentTimestep()) {
+						System.out.println("updating crack " + prop + ".");
 						prop.update();
-
-						// TODO: show a small visualization for each propagator
-						// instead of this:
-						// g.addDamaged(prop.getGrid());
+						System.out.println("next update will be at " + prop.getCurrentTimestep());
 					}
 				}
 				for (int i = 0; i < propagators.size(); i++) {

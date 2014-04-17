@@ -20,4 +20,9 @@ public class Cell4D implements Comparable<Cell4D> {
 	public int compareTo(Cell4D that) {
 		return this.t - that.t;
 	}
+	
+	@Override
+	public String toString(){
+		return super.toString() + "[" + c + ", " + t + "]";
+	}
 }

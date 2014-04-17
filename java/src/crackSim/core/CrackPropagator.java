@@ -24,11 +24,12 @@ public class CrackPropagator {
 	// updates the simulation and returns the next timestep (in simulation time) that the next update() call will use
 	public int update() {
 		Cell4D damaged = updater.getCrackUpdate(currentGrid, this);
-
+		System.out.println("updating " + this + " with  " + damaged);
+		
 		if (damaged != null)
 			currentGrid.addDamaged(damaged.c);
 
-		return currentTimestep = damaged.t;
+		return (currentTimestep += damaged.t);
 	}
 
 	/**

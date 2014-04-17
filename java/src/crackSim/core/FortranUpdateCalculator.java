@@ -7,9 +7,9 @@ public class FortranUpdateCalculator implements CAUpdateCalculator {
 
 	// TODO: add native jni calls to fortran code
 	@Override
-	public native Cell getInitialCrackPosition(Grid currentState);
+	public native Cell4D getInitialCrackPosition(Grid currentState);
 
 	@Override
-	public native Cell getCrackUpdate(Grid currentState);
+	public native Cell4D getCrackUpdate(Grid currentState, CrackPropagator crack);
 
 }

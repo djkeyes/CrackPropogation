@@ -68,6 +68,15 @@ public class FemBackingGrid implements BackingGrid {
 	public Collection<? extends Cell> getCells() {
 		return cells.values();
 	}
+	
+	/**
+	 * Returns a cell based on its index specified by the BDF file input.
+	 * @param femId the integer node index originally specified by a TRIA3 or QUAD4 command 
+	 * @return the cell corrospinding to this index
+	 */
+	public Cell getCell(int femId){
+		return cells.get(femId);
+	}
 
 	@Override
 	public Set<? extends GridPoint> getGridPoints() {
@@ -122,7 +131,7 @@ public class FemBackingGrid implements BackingGrid {
 			// The BDF file i'm using has a lot of irrelevant commands. I assume they're not important for this simulation, but if
 			// they are, they should be removed from this list and have their behavior specified.
 			List<String> ignoredCommands = Arrays.asList("", "CBAR", "PSHELL", "RBE3", "SOL", "CEND", "ECHO", "SUBCASE", "BEGIN", "PARAM",
-					"PBARL", "MAT1*", "*", "SPCADD", "LOAD", "SPC1", "FORCE", "MOMENT", "ENDDATA", "SET");
+					"PBARL", "MAT1*", "*", "SPCADD", "LOAD", "SPC1", "FORCE", "MOMENT", "ENDDATA", "SET", "TITLE");
 			boolean isIgnoredCommand = false;
 			for (String s : ignoredCommands) {
 				if (s.equalsIgnoreCase(commandString)) {
@@ -202,9 +211,16 @@ public class FemBackingGrid implements BackingGrid {
 					}
 				};
 			} else {
-				System.out.println("line: " + "'" + line + "'");
-				System.out.println("cmdstring: "  + "'" + commandString + "'");
+//				System.out.println("line: " + "'" + line + "'");
+//				System.out.println("cmdstring: "  + "'" + commandString + "'");
 //				throw new RuntimeException("command not found: " + commandString + ". meep.");
+				System.err.println("line: " + "'" + line + "'");
+				System.err.println("cmdstring: "  + "'" + commandString + "'");
+				curCommand = new ParseCommand() {
+					@Override
+					public void execute() {
+					}
+				};
 			}
 			return curCommand;
 		}

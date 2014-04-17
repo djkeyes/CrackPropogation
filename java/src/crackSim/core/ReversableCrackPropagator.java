@@ -4,8 +4,8 @@ package crackSim.core;
 public class ReversableCrackPropagator extends CrackPropagator {
 
 
-	public ReversableCrackPropagator(BackingGrid backingGrid, CAUpdateCalculator updater) {
-		super(backingGrid, updater);
+	public ReversableCrackPropagator(int currentTimestep, BackingGrid backingGrid, CAUpdateCalculator updater) {
+		super(currentTimestep, backingGrid, updater);
 	}
 
 	@Override

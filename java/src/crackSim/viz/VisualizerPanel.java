@@ -13,6 +13,7 @@ import crackSim.core.BackingGrid;
 import crackSim.core.BackingGrid.Cell;
 import crackSim.core.BackingGrid.GridPoint;
 import crackSim.core.Grid;
+import crackSim.viz.VisualizerPanel.Camera;
 
 /**
  * This creates the GUI which visually represents the simulation. This is shamelessly copies from the previous project in the hopes
@@ -20,7 +21,7 @@ import crackSim.core.Grid;
  * 
  * @author Daniel Keyes
  */
-public class VisualizerPanel extends JPanel{
+public class VisualizerPanel extends JPanel {
 
 	// private JPanel topView;
 	// private JLabel bottomView;
@@ -28,10 +29,14 @@ public class VisualizerPanel extends JPanel{
 	// private BufferedImage bottomViewSurface;
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private BackingGrid backingGrid;
 	private Comparator<Cell> cellSorter;
 	private Camera camera;
+
+	private boolean drawOutlines;
+
+	private int buffer = 0; // magic value to add some buffer to the edge of the vis
 
 	// simple camera class for handing viewing information
 	// the identity is at 0,0,0 and points down the z (maybe?) axis
@@ -41,6 +46,7 @@ public class VisualizerPanel extends JPanel{
 		// camera parameters:
 		private double vx, vy, vz; // camera position
 		private double thx, thy, thz; // camera rotation--ri is rotation around axis i
+
 		// notably this *technically* is only 4 degrees of freedom
 		// latitude and longitude of the camera direction, and x,y offset of the image
 		// (but don't tell anyone!)
@@ -65,7 +71,7 @@ public class VisualizerPanel extends JPanel{
 			double sy = Math.sin(Math.toRadians(thy));
 			double cz = Math.cos(Math.toRadians(thz));
 			double sz = Math.sin(Math.toRadians(thz));
-			return cy*(sz*y + cz*x) - sy*z;
+			return cy * (sz * y + cz * x) - sy * z;
 		}
 
 		private double getProjectedY(GridPoint p) {
@@ -79,7 +85,7 @@ public class VisualizerPanel extends JPanel{
 			double sy = Math.sin(Math.toRadians(thy));
 			double cz = Math.cos(Math.toRadians(thz));
 			double sz = Math.sin(Math.toRadians(thz));
-			return sx*(cy*z + sy*(sz*y+cz*x	)) + cz*(cz*y + sz*x);
+			return sx * (cy * z + sy * (sz * y + cz * x)) + cz * (cz * y + sz * x);
 		}
 
 		private double getProjectedZ(GridPoint p) {
@@ -92,16 +98,17 @@ public class VisualizerPanel extends JPanel{
 			double sy = Math.sin(Math.toRadians(thy));
 			double cz = Math.cos(Math.toRadians(thz));
 			double sz = Math.sin(Math.toRadians(thz));
-			return cx*(cy*z + sy*(sz*y+cz*x	)) - sx*(cz*y + sz*x);
+			return cx * (cy * z + sy * (sz * y + cz * x)) - sx * (cz * y + sz * x);
 		}
 	}
 
-	/**
-	 * Constructor that initializes all the elements defined above.
-	 */
-	public VisualizerPanel(BackingGrid backingGrid, final Camera viewingDirection) {
+	public VisualizerPanel(BackingGrid macroBackingGrid, final Camera viewingDirection) {
+		this(macroBackingGrid, viewingDirection, true);
+	}
+
+	public VisualizerPanel(BackingGrid macroBackingGrid, final Camera viewingDirection, boolean drawOutlines) {
 		this.camera = viewingDirection;
-		
+		this.drawOutlines = drawOutlines;
 		cellSorter = new Comparator<Cell>() {
 			@Override
 			public int compare(Cell c1, Cell c2) {
@@ -117,8 +124,8 @@ public class VisualizerPanel extends JPanel{
 				return (int) Math.signum(c1max - c2max);
 			}
 		};
-
-		this.backingGrid = backingGrid;
+		
+		this.backingGrid = macroBackingGrid;
 	}
 
 	public void update(Grid currentGrid) {
@@ -127,7 +134,6 @@ public class VisualizerPanel extends JPanel{
 		int screenHeight = getHeight();
 		// find bounds to show for x and y
 		int gridMinX = 0, gridMaxX = 0, gridMinY = 0, gridMaxY = 0;
-		int buffer = 15; // magic value to add some buffer to the edge of the vis
 		boolean first = true;
 		for (GridPoint gp : currentGrid.getGridPoints()) {
 			if (first) {
@@ -205,8 +211,8 @@ public class VisualizerPanel extends JPanel{
 			int[] xPoints = new int[n];
 			int[] yPoints = new int[n];
 			for (int i = 0; i < n; i++) {
-				xPoints[i] = (int) ((camera.getProjectedX(vertices.get(i))-gridMinX)*(screenWidth - 1) / gridWidth);
-				yPoints[i] = (int) ((camera.getProjectedY(vertices.get(i))-gridMinY)*(screenWidth - 1) / gridHeight);
+				xPoints[i] = (int) ((camera.getProjectedX(vertices.get(i)) - gridMinX) * (screenWidth - 1) / gridWidth);
+				yPoints[i] = (int) ((camera.getProjectedY(vertices.get(i)) - gridMinY) * (screenWidth - 1) / gridHeight);
 			}
 
 			// fill the polygon with blue (alive) or red (dead)
@@ -219,9 +225,11 @@ public class VisualizerPanel extends JPanel{
 			}
 			g.fillPolygon(xPoints, yPoints, n);
 
-			// color the edge of the polygon
-			g.setColor(Color.BLACK);
-			g.drawPolygon(xPoints, yPoints, n);
+			if (drawOutlines) {
+				// color the edge of the polygon
+				g.setColor(Color.BLACK);
+				g.drawPolygon(xPoints, yPoints, n);
+			}
 		}
 	}
 }

@@ -20,8 +20,10 @@ public class CrackInitializer {
 		return new CrackPropagator(initialCrack.c, initialCrack.t, localBackingGrid, updater);
 	}
 
-	public ReversableCrackPropagator createNextReversableCrack() {
-		// TODO return a CrackPropagator based on then next occurring crack produces by e-N
-		return null;
+	public ReversableCrackPropagator createNextReversableCrack(Grid currentGrid) {
+		Cell4D initialCrack = updater.nextInitialCrackPosition(currentGrid);
+		// create a new backing grid for the local crack environment
+		BackingGrid localBackingGrid = defaultLocalBackingGrid;
+		return new ReversableCrackPropagator(initialCrack.c, initialCrack.t, localBackingGrid, updater);
 	}
 }

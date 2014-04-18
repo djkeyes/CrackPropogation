@@ -9,6 +9,7 @@ import crackSim.core.FemBackingGrid;
 import crackSim.core.MockUpdateCalculator;
 import crackSim.scheduling.MockScheduler;
 import crackSim.scheduling.Scheduler;
+import crackSim.scheduling.TimeWarpScheduler;
 import crackSim.viz.Visualizer;
 
 public class Runner {
@@ -43,7 +44,8 @@ public class Runner {
 
 		CAUpdateCalculator uc = new MockUpdateCalculator(macroBg);
 
-		programSched = new MockScheduler(macroBg, microBg, uc);
+//		programSched = new MockScheduler(macroBg, microBg, uc);
+		programSched = new TimeWarpScheduler(macroBg, microBg, uc);
 
 		Visualizer viz = new Visualizer(macroBg, microBg);
 

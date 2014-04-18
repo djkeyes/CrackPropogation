@@ -101,6 +101,9 @@ public class CrackPropagator {
 		if (Collections.disjoint(thisMacroCrack.getVertices(), thatMacroCrack.getVertices()))
 			return false;
 
+		// TODO: uncomment the return statement
+		// if this returns true, adjacent cracks will always conflict, which makes this simulation trivial.
+		// if we use the condition, they will only conflict after some duration
 		return true; // this.hasDamageOnEdge || that.hasDamageOnEdge;
 	}
 

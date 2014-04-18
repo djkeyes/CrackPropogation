@@ -51,22 +51,25 @@ public class MockUpdateCalculator implements CAUpdateCalculator {
 			}
 		}
 		// if there's nothing currently damaged, just pick at random
-		if(adjacentUndamaged.isEmpty()){
+		if (adjacentUndamaged.isEmpty()) {
 			adjacentUndamaged.addAll(currentState.getAlive());
 		}
-
-		// for the time, things are a little tricky. Each crack propagator expands independently, so we keep track of how far in time
-		// each propagator is. In our case, we schedule the next crack for 5 timeticks afterwards.
-		if(!simTimePropagators.containsKey(currentCrack)){
-			simTimePropagators.put(currentCrack, currentCrack.getNextTimestep());
-		}
-		int crackTime = simTimePropagators.get(currentCrack);
-		crackTime += 5;
-		simTimePropagators.put(currentCrack, crackTime);
-
-		if (adjacentUndamaged.size() > 0){
+		
+		if (adjacentUndamaged.size() > 0) {
+			// for the time, things are a little tricky. Each crack propagator expands independently, so we keep track of how far in time
+			// each propagator is. In our case, we schedule the next crack for 5 timeticks afterwards.
+			int crackTime;
+			// we need to block other threads briefly while handling the simTimePropagators map.
+			synchronized (simTimePropagators) {
+				if (!simTimePropagators.containsKey(currentCrack)) {
+					simTimePropagators.put(currentCrack, currentCrack.getNextTimestep());
+				}
+				crackTime = simTimePropagators.get(currentCrack);
+				crackTime += 5;
+				simTimePropagators.put(currentCrack, crackTime);
+			}
 			return new Cell4D(adjacentUndamaged.get(rng.nextInt(adjacentUndamaged.size())), crackTime);
-		}else{
+		} else {
 			return null;
 		}
 	}

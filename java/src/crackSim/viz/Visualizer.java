@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.util.List;
+import java.util.Iterator;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -68,12 +68,13 @@ public class Visualizer implements IODevice {
 	}
 
 	@Override
-	public void update(Grid g, int macroTime, List<CrackPropagator> ps) {
+	public void update(Grid g, int macroTime, Iterable<? extends CrackPropagator> ps) {
 		topView.update(g, macroTime);
 		bottomView.update(g, macroTime);
 		
-		for(int i=0; i < Math.min(4, ps.size()); i++){
-			CrackPropagator p = ps.get(i);
+		Iterator<? extends CrackPropagator> iter = ps.iterator();
+		for(int i=0; i < 4 && iter.hasNext(); i++){
+			CrackPropagator p = iter.next();
 			microViews[i].update(p.getGrid(), p.getCurrentTimestep());
 		}
 	}

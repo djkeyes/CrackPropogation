@@ -88,22 +88,22 @@ public class MockScheduler implements Scheduler {
 						prop.update();
 					}
 				}
-				for (int i = 0; i < propagators.size(); i++) {
-					for (int j = propagators.size() - 1; j > i; j--) {
-						CrackPropagator first = propagators.get(i);
-						CrackPropagator second = propagators.get(j);
-						// if there's a conflict, merge the processes
-						// Since we're running these as a single process for the MockScheduler, the times are already sorted by next
-						// update, so no need to perform a time check or rollbacks
-						if (first.conflictsWith(second)) {
-							// this method affects both of them mutually, so
-							// first.affectAdjacent(second)
-							// is the same as
-							// second.affectAdjacent(first)
-							first.affectAdjacent(second);
-						}
-					}
-				}
+//				for (int i = 0; i < propagators.size(); i++) {
+//					for (int j = propagators.size() - 1; j > i; j--) {
+//						CrackPropagator first = propagators.get(i);
+//						CrackPropagator second = propagators.get(j);
+//						// if there's a conflict, merge the processes
+//						// Since we're running these as a single process for the MockScheduler, the times are already sorted by next
+//						// update, so no need to perform a time check or rollbacks
+//						if (first.conflictsWith(second)) {
+//							// this method affects both of them mutually, so
+//							// first.affectAdjacent(second)
+//							// is the same as
+//							// second.affectAdjacent(first)
+//							first.affectAdjacent(second);
+//						}
+//					}
+//				}
 				for (IODevice ioDevice : ioDevices) {
 					ioDevice.update(g, globalTime, propagators);
 				}

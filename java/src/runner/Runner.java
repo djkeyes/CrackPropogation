@@ -6,8 +6,7 @@ import java.io.IOException;
 import crackSim.core.BackingGrid;
 import crackSim.core.CAUpdateCalculator;
 import crackSim.core.FemBackingGrid;
-import crackSim.core.MockUpdateCalculator;
-import crackSim.scheduling.MockScheduler;
+import crackSim.core.UpdateCalculatorFromFile;
 import crackSim.scheduling.Scheduler;
 import crackSim.scheduling.TimeWarpScheduler;
 import crackSim.viz.Visualizer;
@@ -42,7 +41,16 @@ public class Runner {
 			e.printStackTrace();
 		}
 
-		CAUpdateCalculator uc = new MockUpdateCalculator(macroBg);
+//		CAUpdateCalculator uc = new MockUpdateCalculator(macroBg);
+		CAUpdateCalculator uc = new UpdateCalculatorFromFile(
+			"C:/Users/daniel/Documents/GitHub/CrackPropogation/fortran/CIA/RESULT.DAT",
+			"C:/Users/daniel/Documents/GitHub/CrackPropogation/fortran/CPA/CPA.exe",
+			"C:/Users/daniel/Documents/GitHub/CrackPropogation/fortran/CPA/",
+			"C:/Users/daniel/Documents/GitHub/CrackPropogation/fortran/CPA/CrackFoundElement.inp",
+			"C:/Users/daniel/Documents/GitHub/CrackPropogation/fortran/CPA/RESULT_CPA_CYC.out",
+			"C:/Users/daniel/Documents/GitHub/CrackPropogation/fortran/CPA/RESULT_CPA_ELM.out",
+			(FemBackingGrid) macroBg
+		);
 
 //		programSched = new MockScheduler(macroBg, microBg, uc);
 		programSched = new TimeWarpScheduler(macroBg, microBg, uc);

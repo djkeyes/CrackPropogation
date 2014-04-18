@@ -75,7 +75,7 @@ public class MockUpdateCalculator implements CAUpdateCalculator {
 	}
 
 	@Override
-	public int getNextCrackUpdateTime() {
+	public int getNextCrackUpdateTime(CrackPropagator currentCrack) {
 		// cracks always happen 5 ticks after one another.
 		return 5;
 	}

@@ -17,7 +17,7 @@ import crackSim.core.ReversableCrackPropagator;
 public class TimeWarpScheduler implements Scheduler {
 
 	// limit the computation to only use this many cracks/processes: 
-	private static final int MAX_NUMBER_CRACKS = 3;
+	private static final int MAX_NUMBER_CRACKS = 50;
 	
 	private List<IODevice> ioDevices;
 

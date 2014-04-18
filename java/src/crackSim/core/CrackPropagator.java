@@ -33,16 +33,18 @@ public class CrackPropagator {
 	private boolean hasAdjacentCracks = false;
 	private final double adjacentSpeedup = 1.0 / 1.5; // multiply the required cycle count by adjacentSpeedup times
 
-	public CrackPropagator(int initialTime, BackingGrid backingGrid, CAUpdateCalculator updater) {
-		currentGrid = new Grid(backingGrid);
-		this.updater = updater;
-
-		this.currentTimestep = initialTime;
-		this.nextTimestep = currentTimestep + updater.getNextCrackUpdateTime();
-	}
+//	public CrackPropagator(int initialTime, BackingGrid backingGrid, CAUpdateCalculator updater) {
+//		currentGrid = new Grid(backingGrid);
+//		this.updater = updater;
+//
+//		this.currentTimestep = initialTime;
+//		this.nextTimestep = currentTimestep + updater.getNextCrackUpdateTime(this);
+//	}
 
 	public CrackPropagator(Cell initialCrack, int initialTime, BackingGrid backingGrid, CAUpdateCalculator updater) {
-		this(initialTime, backingGrid, updater);
+		currentGrid = new Grid(backingGrid);
+		this.updater = updater;
+		
 		this.initialCrackLocation = initialCrack;
 
 		this.edgeCells = new HashSet<Cell>();
@@ -56,6 +58,10 @@ public class CrackPropagator {
 			}
 		}
 
+
+		this.currentTimestep = initialTime;
+		this.nextTimestep = currentTimestep + updater.getNextCrackUpdateTime(this);
+		
 	}
 
 	// updates the simulation and returns the next timestep (in simulation time) that the next update() call will use
@@ -73,11 +79,16 @@ public class CrackPropagator {
 			// business.
 			// just roll with it.
 			int diff = damaged.t - currentTimestep;
+//			System.out.println("diff=" + diff);
 			if (hasAdjacentCracks)
 				diff = (int) (diff * adjacentSpeedup);
+			diff = Math.max(diff, 1);
+//			System.out.println("diff=" + diff);
 			nextTimestep += diff;
+//			System.out.println("current=" + currentTimestep + ", next=" + nextTimestep);
 			return nextTimestep;
 		}
+		
 
 		// TODO: does this ever happen?
 		// It might happen if we're reading updates from a file and run out of updates? or if we fill up the CA grid?

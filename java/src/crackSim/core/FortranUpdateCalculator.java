@@ -13,7 +13,7 @@ public class FortranUpdateCalculator implements CAUpdateCalculator {
 	public native Cell4D getCrackUpdate(Grid currentState, CrackPropagator crack);
 
 	@Override
-	public int getNextCrackUpdateTime() {
+	public int getNextCrackUpdateTime(CrackPropagator currentCrack) {
 		// TODO Auto-generated method stub
 		return -1;
 	}

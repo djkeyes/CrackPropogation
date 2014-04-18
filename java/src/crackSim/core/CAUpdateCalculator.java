@@ -6,6 +6,6 @@ public interface CAUpdateCalculator {
 
 	public Cell4D nextInitialCrackPosition(Grid currentState);
 	public Cell4D getCrackUpdate(Grid currentState, CrackPropagator currentCrack);
-	public int getNextCrackUpdateTime();
+	public int getNextCrackUpdateTime(CrackPropagator currentCrack);
 	
 }

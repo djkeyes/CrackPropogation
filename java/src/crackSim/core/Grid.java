@@ -36,7 +36,7 @@ public class Grid {
 	 * @param A
 	 *            cell
 	 */
-	public void addDamaged(Cell c) {
+	public synchronized void addDamaged(Cell c) {
 		damaged.add(c);
 		alive.remove(c);
 	}
@@ -48,7 +48,7 @@ public class Grid {
 	 * @param grid
 	 *            A grid containing any amount of damaged cells to merge into this grid.
 	 */
-	public void addDamaged(Grid grid) {
+	public synchronized void addDamaged(Grid grid) {
 		assert(this.backingGrid == grid.backingGrid);
 		
 		for(Cell c : grid.damaged){
@@ -57,26 +57,31 @@ public class Grid {
 		}
 	}
 
-	public Set<Cell> getAlive() {
-		return alive;
+	public synchronized Set<Cell> getAlive() {
+		return new HashSet<Cell>(alive);
 	}
 
-	public Set<Cell> getDamaged() {
-		return damaged;
+	public synchronized Set<Cell> getDamaged() {
+		return new HashSet<Cell>(damaged);
 	}
 
 	/**
 	 * Returns all cells adjacent to the current cell
 	 */
-	public List<? extends Cell> getAdjacent(Cell c) {
+	public synchronized List<? extends Cell> getAdjacent(Cell c) {
 		return backingGrid.getNeighbors(c);
 	}
 
-	public Set<? extends GridPoint> getGridPoints() {
+	public synchronized Set<? extends GridPoint> getGridPoints() {
 		return backingGrid.getGridPoints();
 	}
 
-	public BackingGrid getBackingGrid() {
+	public synchronized BackingGrid getBackingGrid() {
 		return backingGrid;
+	}
+
+	public synchronized void removeDamaged(Cell c) {
+		damaged.remove(c);
+		alive.add(c);
 	}
 }

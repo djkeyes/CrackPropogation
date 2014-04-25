@@ -93,9 +93,13 @@ public class UpdateCalculatorFromFile implements CAUpdateCalculator {
 
 	@Override
 	public Cell4D nextInitialCrackPosition(Grid currentState) {
+		if(initialCracks.isEmpty()){
+			return null;
+		}
+		
 		Cell4D result = initialCracks.remove();
 		int resultIndex = macroBackingGrid.getIndex(result.c);
-		System.out.println(resultIndex);
+//		System.out.println(resultIndex);
 
 		// design decision: call the CPA code when we first return the initial
 		// crack location
@@ -183,7 +187,7 @@ public class UpdateCalculatorFromFile implements CAUpdateCalculator {
 			e.printStackTrace();
 		}
 		// this doesn't have to be synchronized because it's only called from the CrackInitiazer process
-		System.out.println("first output: " + resultIndex + "--" + Arrays.toString(queue.get(0)));
+//		System.out.println("first output: " + resultIndex + "--" + Arrays.toString(queue.get(0)));
 		simTimePropagators.put(resultIndex, queue);
 		propagatorStartTimes.put(resultIndex, result.t);
 
@@ -200,8 +204,8 @@ public class UpdateCalculatorFromFile implements CAUpdateCalculator {
 		int[] head = simTimePropagators.get(currentCrackIndex).removeFirst();
 		int startTime = propagatorStartTimes.get(currentCrackIndex);
 
-		System.out.println("next crack schduled for " + (head[1]+startTime));
-		System.out.println("update: "  + head[1]);
+//		System.out.println("next crack schduled for " + (head[1]+startTime));
+//		System.out.println("update: "  + head[1]);
 		FemBackingGrid microBackingGrid = (FemBackingGrid) currentState.getBackingGrid();
 		return new Cell4D(microBackingGrid.getCell(head[0]), head[1]+startTime);
 	}

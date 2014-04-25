@@ -5,7 +5,10 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JPanel;
 
@@ -13,7 +16,6 @@ import crackSim.core.BackingGrid;
 import crackSim.core.BackingGrid.Cell;
 import crackSim.core.BackingGrid.GridPoint;
 import crackSim.core.Grid;
-import crackSim.viz.VisualizerPanel.Camera;
 
 /**
  * This creates the GUI which visually represents the simulation. This is shamelessly copies from the previous project in the hopes
@@ -208,6 +210,10 @@ public class VisualizerPanel extends JPanel {
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, (int) screenWidth, (int) screenHeight);
 
+		
+		Set<Cell> damaged = currentGrid.getDamaged();
+		Set<Cell> alive = currentGrid.getAlive();
+		
 		for (Cell c : sortedCells) {
 			List<GridPoint> vertices = c.getVertices();
 			int n = vertices.size();
@@ -218,12 +224,14 @@ public class VisualizerPanel extends JPanel {
 				yPoints[i] = (int) ((camera.getProjectedY(vertices.get(i)) - gridMinY) * (screenWidth - 1) / gridHeight);
 			}
 
+			List<? extends Cell> adjacent = currentGrid.getAdjacent(c);
+			
 			// fill the polygon with blue (alive) or red (dead)
-			if (currentGrid.getDamaged().contains(c)) {
+			if (damaged.contains(c)) {
 				g.setColor(Color.RED);
-			} else if (!Collections.disjoint(currentGrid.getAdjacent(c), currentGrid.getDamaged())) {
+			} else if (!Collections.disjoint(adjacent, damaged)) {
 				g.setColor(Color.YELLOW);
-			} else if (currentGrid.getAlive().contains(c)) {
+			} else if (alive.contains(c)) {
 				g.setColor(Color.BLUE);
 			}
 			g.fillPolygon(xPoints, yPoints, n);

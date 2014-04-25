@@ -15,6 +15,9 @@ public class CrackInitializer {
 
 	public CrackPropagator createNextCrack(Grid currentGrid) {
 		Cell4D initialCrack = updater.nextInitialCrackPosition(currentGrid);
+		if(initialCrack==null){
+			return null;
+		}
 		// create a new backing grid for the local crack environment
 		BackingGrid localBackingGrid = defaultLocalBackingGrid;
 		return new CrackPropagator(initialCrack.c, initialCrack.t, localBackingGrid, updater);
@@ -22,6 +25,9 @@ public class CrackInitializer {
 
 	public ReversableCrackPropagator createNextReversableCrack(Grid currentGrid) {
 		Cell4D initialCrack = updater.nextInitialCrackPosition(currentGrid);
+		if(initialCrack==null){
+			return null;
+		}
 		// create a new backing grid for the local crack environment
 		BackingGrid localBackingGrid = defaultLocalBackingGrid;
 		return new ReversableCrackPropagator(initialCrack.c, initialCrack.t, localBackingGrid, updater);

@@ -33,18 +33,18 @@ public class CrackPropagator {
 	protected boolean hasAdjacentCracks = false;
 	private final double adjacentSpeedup = 1.0 / 1.5; // multiply the required cycle count by adjacentSpeedup times
 
-//	public CrackPropagator(int initialTime, BackingGrid backingGrid, CAUpdateCalculator updater) {
-//		currentGrid = new Grid(backingGrid);
-//		this.updater = updater;
-//
-//		this.currentTimestep = initialTime;
-//		this.nextTimestep = currentTimestep + updater.getNextCrackUpdateTime(this);
-//	}
+	// public CrackPropagator(int initialTime, BackingGrid backingGrid, CAUpdateCalculator updater) {
+	// currentGrid = new Grid(backingGrid);
+	// this.updater = updater;
+	//
+	// this.currentTimestep = initialTime;
+	// this.nextTimestep = currentTimestep + updater.getNextCrackUpdateTime(this);
+	// }
 
 	public CrackPropagator(Cell initialCrack, int initialTime, BackingGrid backingGrid, CAUpdateCalculator updater) {
 		currentGrid = new Grid(backingGrid);
 		this.updater = updater;
-		
+
 		this.initialCrackLocation = initialCrack;
 
 		this.edgeCells = new HashSet<Cell>();
@@ -58,10 +58,13 @@ public class CrackPropagator {
 			}
 		}
 
-
 		this.currentTimestep = initialTime;
-		this.nextTimestep = currentTimestep + updater.getNextCrackUpdateTime(this);
-		
+		if (updater.getNextCrackUpdateTime(this) < Integer.MAX_VALUE) {
+			this.nextTimestep = currentTimestep + updater.getNextCrackUpdateTime(this);
+		} else {
+			this.nextTimestep = Integer.MAX_VALUE;
+		}
+
 	}
 
 	// updates the simulation and returns the next timestep (in simulation time) that the next update() call will use
@@ -69,8 +72,8 @@ public class CrackPropagator {
 		Cell4D damaged = updater.getCrackUpdate(currentGrid, this);
 		return update(damaged);
 	}
-	
-	protected int update(Cell4D damaged){
+
+	protected int update(Cell4D damaged) {
 		currentTimestep = nextTimestep;
 
 		if (damaged != null) {
@@ -83,16 +86,15 @@ public class CrackPropagator {
 			// business.
 			// just roll with it.
 			int diff = damaged.t - currentTimestep;
-//			System.out.println("diff=" + diff);
+			// System.out.println("diff=" + diff);
 			if (hasAdjacentCracks)
 				diff = (int) (diff * adjacentSpeedup);
 			diff = Math.max(diff, 1);
-//			System.out.println("diff=" + diff);
+			// System.out.println("diff=" + diff);
 			nextTimestep += diff;
-//			System.out.println("current=" + currentTimestep + ", next=" + nextTimestep);
+			// System.out.println("current=" + currentTimestep + ", next=" + nextTimestep);
 			return nextTimestep;
 		}
-		
 
 		// TODO: does this ever happen?
 		// It might happen if we're reading updates from a file and run out of updates? or if we fill up the CA grid?
@@ -123,8 +125,8 @@ public class CrackPropagator {
 	}
 
 	/**
-	 * Makes one crack speed up the growth rate of another crack. Afterwards, the passed propagator should be discarded. It is up to the caller to
-	 * make sure these cracks actually conflict and are already at adjacent timesteps.
+	 * Makes one crack speed up the growth rate of another crack. Afterwards, the passed propagator should be discarded. It is up to
+	 * the caller to make sure these cracks actually conflict and are already at adjacent timesteps.
 	 * 
 	 * @param that
 	 *            the propagator to merge. The passed CrackPropagator is merged INTO the implicit CrackPropagator.
@@ -139,12 +141,13 @@ public class CrackPropagator {
 
 		// this has to be before the other cracks next update
 		// (and vice versa)
-//		if(this.currentTimestep >= that.nextTimestep || that.currentTimestep >= this.nextTimestep){
-//			System.err.println("Can not perform interaction because one crack is too far ahead in time! " + this + "(t=" +this.currentTimestep+ "-> " +this.nextTimestep+"), " + that + "(t=" + that.currentTimestep+ "->" + that.nextTimestep+ ")");
-//			return;
-//		}
-		
-//		System.out.println(this + " and " + that +" + are adjacent! hoorah!");
+		// if(this.currentTimestep >= that.nextTimestep || that.currentTimestep >= this.nextTimestep){
+		// System.err.println("Can not perform interaction because one crack is too far ahead in time! " + this + "(t="
+		// +this.currentTimestep+ "-> " +this.nextTimestep+"), " + that + "(t=" + that.currentTimestep+ "->" + that.nextTimestep+ ")");
+		// return;
+		// }
+
+		// System.out.println(this + " and " + that +" + are adjacent! hoorah!");
 		// the cracks conflict and are at the same time period. awesome.
 		this.hasAdjacentCracks = true;
 	}
@@ -160,7 +163,7 @@ public class CrackPropagator {
 	public int getCurrentTimestep() {
 		return currentTimestep;
 	}
-	
+
 	public Cell getInitialCrackLocation() {
 		return initialCrackLocation;
 	}

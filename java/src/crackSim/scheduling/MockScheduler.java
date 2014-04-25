@@ -19,6 +19,9 @@ import crackSim.core.Grid;
  * Mock scheduler. Rather than allowing propagators to run independently, this just calls them in sequential order. It is a sequential,
  * rather than parallel, scheduler.
  * 
+ * This runs *slower than* simulation time, because it only steps by a single cycle. Use SequentialScheduler to run processes
+ * as-fast-as-possible, but in sequential order.
+ * 
  * This is convenient because there are no anti-messages needed for now.
  */
 public class MockScheduler implements Scheduler {
@@ -63,11 +66,11 @@ public class MockScheduler implements Scheduler {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				System.out.println("update--time=" + globalTime);
-//				System.out.println("propagators list:");
-//				for (CrackPropagator p : propagators) {
-//					System.out.println(p + ": t=" + p.getCurrentTimestep() + ", n=" + p.getNextTimestep());
-//				}
-				
+				// System.out.println("propagators list:");
+				// for (CrackPropagator p : propagators) {
+				// System.out.println(p + ": t=" + p.getCurrentTimestep() + ", n=" + p.getNextTimestep());
+				// }
+
 				// for now, just start up the visualizer in Runner and send it a couple dummy updates.
 				// Cell newInitialCrack = updateCalculator.getInitialCrackPosition(g);
 				// note: the initializer does not run in simulation time--it runs *faster than* simulation time. If we call
@@ -88,22 +91,22 @@ public class MockScheduler implements Scheduler {
 						prop.update();
 					}
 				}
-//				for (int i = 0; i < propagators.size(); i++) {
-//					for (int j = propagators.size() - 1; j > i; j--) {
-//						CrackPropagator first = propagators.get(i);
-//						CrackPropagator second = propagators.get(j);
-//						// if there's a conflict, merge the processes
-//						// Since we're running these as a single process for the MockScheduler, the times are already sorted by next
-//						// update, so no need to perform a time check or rollbacks
-//						if (first.conflictsWith(second)) {
-//							// this method affects both of them mutually, so
-//							// first.affectAdjacent(second)
-//							// is the same as
-//							// second.affectAdjacent(first)
-//							first.affectAdjacent(second);
-//						}
-//					}
-//				}
+				// for (int i = 0; i < propagators.size(); i++) {
+				// for (int j = propagators.size() - 1; j > i; j--) {
+				// CrackPropagator first = propagators.get(i);
+				// CrackPropagator second = propagators.get(j);
+				// // if there's a conflict, merge the processes
+				// // Since we're running these as a single process for the MockScheduler, the times are already sorted by next
+				// // update, so no need to perform a time check or rollbacks
+				// if (first.conflictsWith(second)) {
+				// // this method affects both of them mutually, so
+				// // first.affectAdjacent(second)
+				// // is the same as
+				// // second.affectAdjacent(first)
+				// first.affectAdjacent(second);
+				// }
+				// }
+				// }
 				for (IODevice ioDevice : ioDevices) {
 					ioDevice.update(g, globalTime, propagators);
 				}

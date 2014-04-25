@@ -60,57 +60,51 @@ public class SequentialScheduler implements Scheduler {
 	@Override
 	public void run() {
 
-
 		// initial update
 		for (IODevice ioDevice : ioDevices) {
 			ioDevice.update(globalTimeGrid, 0, propagators);
 		}
 
-		// this just runs on a clock, but it could be put inside a while-loop instead to run as-fast-as-possible
-		int delay = 1; // in milliseconds
-		Timer t = new Timer(delay, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-//				System.out.println("update--time=" + globalTime);
-
-				int nextTime = Integer.MAX_VALUE;
-
-				if (nextInitialCrack == null) {
-					nextInitialCrack = initializer.createNextCrack(globalTimeGrid);
-				}
-				while (nextInitialCrack != null && nextInitialCrack.getCurrentTimestep() <= globalTime) {
-					propagators.add(nextInitialCrack);
-					globalTimeGrid.addDamaged(nextInitialCrack.getInitialCrackLocation());
-
-					nextInitialCrack = initializer.createNextCrack(globalTimeGrid);
-				}
-
-				for (CrackPropagator prop : propagators) {
-					if (globalTime >= prop.getNextTimestep()) {
-						prop.update();
-					}
-					nextTime = Math.min(nextTime, prop.getNextTimestep());
-				}
-
-				// also check for conflicts
-				for (CrackPropagator first : propagators) {
-					for (CrackPropagator second : propagators) {
-						if (first == second)
-							continue;
-
-						if(first.conflictsWith(second)){
-							first.affectAdjacent(second);
-							second.affectAdjacent(first);
-						}
-					}
-				}
-				
-				globalTime = nextTime;
-			}
-		});
-		t.start();
-		
 		new Thread(new IoUpdaterProcess()).start();
+
+		while (true) {
+			// System.out.println("update--time=" + globalTime);
+
+			int nextTime = Integer.MAX_VALUE;
+
+			if (nextInitialCrack == null) {
+				nextInitialCrack = initializer.createNextCrack(globalTimeGrid);
+			}
+			while (nextInitialCrack != null && nextInitialCrack.getCurrentTimestep() <= globalTime) {
+				propagators.add(nextInitialCrack);
+				globalTimeGrid.addDamaged(nextInitialCrack.getInitialCrackLocation());
+
+				nextInitialCrack = initializer.createNextCrack(globalTimeGrid);
+			}
+
+			for (CrackPropagator prop : propagators) {
+				if (globalTime >= prop.getNextTimestep()) {
+					prop.update();
+				}
+				nextTime = Math.min(nextTime, prop.getNextTimestep());
+			}
+
+			// also check for conflicts
+			for (CrackPropagator first : propagators) {
+				for (CrackPropagator second : propagators) {
+					if (first == second)
+						continue;
+
+					if (first.conflictsWith(second)) {
+						first.affectAdjacent(second);
+						second.affectAdjacent(first);
+					}
+				}
+			}
+
+			globalTime = nextTime;
+		}
+
 	}
 
 	@Override
@@ -118,16 +112,14 @@ public class SequentialScheduler implements Scheduler {
 		ioDevices.add(ioDevice);
 	}
 
-	
-	
 	private class IoUpdaterProcess implements Runnable {
 
 		private List<CrackPropagator> propagatorsCopy = new LinkedList<CrackPropagator>();
-		
+
 		@Override
 		public void run() {
 			while (true) {
-				if(propagatorsCopy.size() < propagators.size()){
+				if (propagatorsCopy.size() < propagators.size()) {
 					propagatorsCopy = new LinkedList<CrackPropagator>(propagators);
 				}
 				for (IODevice ioDevice : ioDevices) {

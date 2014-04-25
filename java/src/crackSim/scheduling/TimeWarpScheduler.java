@@ -143,6 +143,9 @@ public class TimeWarpScheduler implements Scheduler {
 		public void run() {
 			while (true) {
 				// pop the next action from the queue
+				if (messageQueue.isEmpty())
+					continue;
+
 				Message cur = messageQueue.remove();
 
 				if (cur.isConflict) {
@@ -203,9 +206,8 @@ public class TimeWarpScheduler implements Scheduler {
 						if (this.crack.conflictsWith(p.crack)) {
 							// no need to send a message unless it's about something new
 							// if both cracks are already conflicted, they can continue as usualy
-							if ((p.crack.getConflictStartTime() == -1
-									|| p.crack.getConflictStartTime() > this.crack.getCurrentTimestep())
-									&& !conflictMessageSent.contains(p)) {
+							if ((p.crack.getConflictStartTime() == -1 || p.crack.getConflictStartTime() > this.crack
+									.getCurrentTimestep()) && !conflictMessageSent.contains(p)) {
 								System.out.println(id + ": sending conflict message from " + this + " to " + p);
 								p.crack.affectAdjacent(this.crack);
 								Message m = new Message(this.crack.getCurrentTimestep(), this, p, false);
@@ -220,9 +222,11 @@ public class TimeWarpScheduler implements Scheduler {
 					crack.update();
 
 					// and enqueue next update
-					Message m = new Message(crack.getNextTimestep(), /* sender */this, /* receiver */this, /* isAntiMessage */false);
-					m.isUpdate = true;
-					messageQueue.add(m);
+					if (crack.getNextTimestep() < Integer.MAX_VALUE) {
+						Message m = new Message(crack.getNextTimestep(), /* sender */this, /* receiver */this, /* isAntiMessage */false);
+						m.isUpdate = true;
+						messageQueue.add(m);
+					}
 				}
 
 				oldMessages.addLast(cur);

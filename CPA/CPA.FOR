@@ -1,9 +1,9 @@
 
 c***************************************************************
-c	Version 3.1
+c	Version 3.2
 C	
 C	SINCE  2014.04.10
-c	UPDATE 2014.04.13
+c	UPDATE 2014.04.24
 c
 c	CRACK PROPAGATION ANALYSIS PROGRAM 
 c
@@ -59,7 +59,7 @@ C***************************************************************
 	WRITE(*,*)''
 	WRITE(*,*)'       C  P  A  - Crack Propagation Analysis          '
 	WRITE(*,*)''
-	WRITE(*,*)'                    Version 3.1                      '
+	WRITE(*,*)'                    Version 3.2                      '
 	WRITE(*,*)' '
 	WRITE(*,*)'****************************************************'	
 
@@ -105,10 +105,11 @@ c	WRITE(*,*) " "
 
 C1500	FORMAT(2X, G30.0 , 2X, G10.4 )
 C	To save run time *****************
-c ************************* Internal force ******************************
+
 	WRITE(*,*) " Read Internal Forces ......."
 
 	OPEN(unit=4, file='Internal_all_forces_SCRM.dat')
+
 	
 	DO 11, I=1,41304
 
@@ -118,8 +119,6 @@ c ************************* Internal force ******************************
 11	CONTINUE
 	CLOSE(4)
 
-
-c ********************** Distingush the elements type ************
 
 		IF (ELM_CF.GT.60) THEN
 		MM=4
@@ -194,7 +193,7 @@ C	write(*,*) ELMNODE(I,1) , ELMNODE(I,2)
 	close(6)
 
 
-C ************** Stress from SCRM ******************
+C ************** Stress from CRM ******************
 C	TO GET REAL STRESS
   
 	OPEN(UNIT=9,FILE='stressCRM.dat')
@@ -294,7 +293,8 @@ C*****************	Find initial dead cell ************
 	
 50	CONTINUE
 
-
+	OPEN(UNIT=7,FILE='RESULT_CPA_ELM.out')
+	CLOSE(UNIT=7,STATUS='DELETE')
 	OPEN(UNIT=7,FILE='RESULT_CPA_ELM.out')
 
 C********************STRESS SPECTRUM**********
@@ -320,7 +320,7 @@ C	Half of yield strength
 	SIGMA0=34000
 
 C	TEST************
-	N=1000
+	N=7720/2
 C	******************
 
 
@@ -373,9 +373,9 @@ c	Write(*,*) "NextDeadCell :", NextDeadCell
 
 	CLOSE(7)
 C	******* Cycles to propagate 1 cell ********
-	OPEN(UNIT=8,FILE='RESULT_CPA_CYC.out',STATUS='NEW')
-	CLOSE(UNIT=8,STATUS='DELETE')
-	OPEN(UNIT=8,FILE='RESULT_CPA_CYC.out',STATUS='NEW')	
+	OPEN(UNIT=2,FILE='RESULT_CPA_CYC.out')
+	CLOSE(UNIT=2,STATUS='DELETE')
+	OPEN(UNIT=2,FILE='RESULT_CPA_CYC.out')	
 
 
 c	******** CRACK CLOSURE MODEL ***********
@@ -403,11 +403,11 @@ c	WRITE(*,*) Keff
 	cracka=Ai+dela
 	
 	If (cracka .GT. Af) then
-	OPEN(UNIT=8,FILE='RESULT_CPA_CYC.out',STATUS='old',POSITION='APPEND')
-	WRITE(8,*) K
+	OPEN(UNIT=2,FILE='RESULT_CPA_CYC.out',STATUS='old',POSITION='APPEND')
+	WRITE(2,*) K
 	WRITE(*,*) " *********", K
 	cracka=0
-	CLOSE(8)
+	CLOSE(2)
 	ENDIF
 	
 	

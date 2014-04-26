@@ -44,12 +44,12 @@ public class Runner {
 
 //		CAUpdateCalculator uc = new MockUpdateCalculator(macroBg);
 		CAUpdateCalculator uc = new UpdateCalculatorFromFile(
-			"C:/Users/daniel/Documents/GitHub/CrackPropogation/fortran/CIA/RESULT.DAT",
-			"C:/Users/daniel/Documents/GitHub/CrackPropogation/fortran/CPA/CPA.exe",
-			"C:/Users/daniel/Documents/GitHub/CrackPropogation/fortran/CPA/",
-			"C:/Users/daniel/Documents/GitHub/CrackPropogation/fortran/CPA/CrackFoundElement.inp",
-			"C:/Users/daniel/Documents/GitHub/CrackPropogation/fortran/CPA/RESULT_CPA_CYC.out",
-			"C:/Users/daniel/Documents/GitHub/CrackPropogation/fortran/CPA/RESULT_CPA_ELM.out",
+			"C:/GitHub/Crack/CrackPropogation/CPA/RESULT.DAT",
+			"C:/GitHub/Crack/CrackPropogation/CPA/CPA.exe",
+			"C:/GitHub/Crack/CrackPropogation/CPA/",
+			"C:/GitHub/Crack/CrackPropogation/CPA/CrackFoundElement.inp",
+			"C:/GitHub/Crack/CrackPropogation/CPA/RESULT_CPA_CYC.out",
+			"C:/GitHub/Crack/CrackPropogation/CPA/RESULT_CPA_ELM.out",
 			(FemBackingGrid) macroBg
 		);
 

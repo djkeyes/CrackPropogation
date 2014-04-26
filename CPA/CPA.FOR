@@ -105,11 +105,10 @@ c	WRITE(*,*) " "
 
 C1500	FORMAT(2X, G30.0 , 2X, G10.4 )
 C	To save run time *****************
-
+c ************************* Internal force ******************************
 	WRITE(*,*) " Read Internal Forces ......."
 
 	OPEN(unit=4, file='Internal_all_forces_SCRM.dat')
-
 	
 	DO 11, I=1,41304
 
@@ -119,6 +118,8 @@ C	To save run time *****************
 11	CONTINUE
 	CLOSE(4)
 
+
+c ********************** Distingush the elements type ************
 
 		IF (ELM_CF.GT.60) THEN
 		MM=4
@@ -193,7 +194,7 @@ C	write(*,*) ELMNODE(I,1) , ELMNODE(I,2)
 	close(6)
 
 
-C ************** Stress from CRM ******************
+C ************** Stress from SCRM ******************
 C	TO GET REAL STRESS
   
 	OPEN(UNIT=9,FILE='stressCRM.dat')
